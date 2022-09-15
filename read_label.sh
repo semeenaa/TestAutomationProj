@@ -10,24 +10,26 @@ if [[ "$PR_NUMBER" = "0" || -z "$PR_NUMBER" ]]; then
  exit 1
 fi
 
-if [[-z "$GITHUB_TOKEN" ]]; then
+if [[ -z "$GITHUB_TOKEN" ]]; then
  echo "Token not set"
- exit 1
+ #exit 1
 fi
 
 #get all labels in a PR
-URL = "https://github.com/semeenaa/TestAutomationProj/$PR_NUMBER/labels"
+URL="https://github.com/semeenaa/TestAutomationProj/issues/$PR_NUMBER/labels"
 LABELS=()
-
+echo $(curl -s X GET --header "Authorization: token $GITHUB_TOKEN" "$URL")
 while IFS=$'\n' read -r line; do
-LABELS+=("${line}")
-done < < (curl -s X GET --header "Authorization: token $GITHUB_TOKEN" "$URL" | jq '.[]name')
+ LABELS+=("${line}")
+done < <(curl -s X GET --header "Authorization: token $GITHUB_TOKEN" "$URL" | jq '.[].name')
 
 #print labels
-if [[ "${LABELS[@]} -ne 0 ]]; then 
+if [[ ${LABELS[@]} -ne 0 ]]; then 
  echo "No labels present"
 else
  for labe in ${LABELS[@]}; do
   echo "$i"
- done 
+ done  
 fi
+
+
